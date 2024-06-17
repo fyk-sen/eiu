@@ -20,7 +20,7 @@ class Main extends StatelessWidget {
           create: (_) => MQTTState(),
           child: const Home(),
        ),
-       theme: ThemeData(scaffoldBackgroundColor: Colors.yellow[50]),
+       theme: ThemeData(scaffoldBackgroundColor: Colors.grey[200]),
        );
   } 
 }
