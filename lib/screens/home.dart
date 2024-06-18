@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
-
 import 'package:fl_chart/fl_chart.dart';
 
 import '../mqtt/state.dart';
@@ -15,34 +14,32 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List sub = List.generate(98, (index) => 0);
-  Map<int, String> map = <int, String>{};
-  double roundedNumber = 0;
+  int id = 1;
+  int occ = 0;
+  int unocc = 0;
+  
+  double round = 0;
   double percentage = 0;
-  int unOccupied = 0;
-  int occupied = 0;
-  List<String> cell = [];
-  int id = 0;
 
   late MQTT manager;
   late MQTTState currentAppState;
 
+  List<String> cell = [];
+  List<String> value = [];
+  List sub = List.generate(98, (index) => [0,'0']);
   final space = const SizedBox(height: 10.0);
 
   @override
-  void initState() {
-    super.initState();
-  }
+  void initState() {super.initState();}
 
   @override
   Widget build(BuildContext context) {
     final MQTTState appState = Provider.of<MQTTState>(context);
-    print('sub $sub');
 
     currentAppState = appState;
 
-    return Scaffold(
-        body: Column(
+  return Scaffold(
+      body: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -50,9 +47,12 @@ class _HomeState extends State<Home> {
             connColor(currentAppState.getAppConnectionState)),
         connBtn(currentAppState.getAppConnectionState),
         space,
-        const Text(
+        Text(
           'STALL DATA',
-          style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              color: Colors.brown[900],
+              fontSize: 21,
+              fontWeight: FontWeight.bold),
         ),
         chart(currentAppState.getSubText),
         data(),
@@ -110,7 +110,7 @@ class _HomeState extends State<Home> {
   connColor(MQTTAppConnectionState state) {
     switch (state) {
       case MQTTAppConnectionState.connected:
-        return Colors.green;
+        return Colors.pink;
       case MQTTAppConnectionState.connecting:
         return Colors.amber;
       case MQTTAppConnectionState.disconnected:
@@ -130,34 +130,40 @@ class _HomeState extends State<Home> {
     manager.connect();
   }
 
-  void disconn() {
-    manager.disconnect();
-  }
+  void disconn() {manager.disconnect();}
 
-// Pie Chart
   Widget chart(String data) {
-    data == '' ? {} : {cell = data.split('*'), id = int.parse(cell[0])};
+    int c = 0;
+    data == ''
+    ? {}
+    : {cell = data.split('*'),
+      id = int.parse(cell[0]),
+      if (cell[1] != '0'){value.add(cell[1])},
+      for (int i = 0; i < sub.length; i++) {
+        if (i==id) {sub[i-1] = cell}, 
+        if (cell[1] == '') {cell[1] = '0'},},
+      
+      for(int i = 0 ; i < sub.length; i++){
+        if(sub[i][1] != '0'){c++}},
+
+      print(c),
+        
+        };
 
     print('cell $cell');
     print('id $id');
+    print('sub $sub');
 
-    for (int i = 0; i < sub.length+1; i++) {
-      if (i == id) {
-        sub[i] = id;
-      }
-    }
+    double red = c.toDouble();
+    double green = sub.length - red;
 
-    double falseval =  (sub.where((item) => item == '0' || item == 0).length).toDouble();
-    double trueval =  sub.length - falseval;
+    unocc = green.toInt();
+    occ = red.toInt();
+    percentage = (unocc / sub.length) * 100;
+    round = double.parse(percentage.toStringAsFixed(1));
 
-    occupied = falseval.toInt();
-    unOccupied = trueval.toInt();
-    percentage = (occupied / (occupied + unOccupied)) * 100;
-    roundedNumber = double.parse(percentage.toStringAsFixed(1));
-
-    print('unocc $trueval');
-        print('occ $falseval');
-
+    print('unocc $green');
+    print('occ $red');
 
     return Expanded(
       child: Padding(
@@ -165,16 +171,26 @@ class _HomeState extends State<Home> {
         child: Container(
           decoration: BoxDecoration(
               borderRadius: const BorderRadius.all(Radius.circular(20)),
-              color: Colors.brown[100]),
+              color: Colors.grey[200]),
           child: Stack(
             alignment: Alignment.center,
             children: [
-              Text(
-                "$roundedNumber%",
-                style:
-                    const TextStyle(fontSize: 40, fontWeight: FontWeight.w500),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                "$round",
+                style: TextStyle(
+                    color: Colors.brown[900],
+                    fontSize: 40,
+                    fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center,
               ),
+              Text('PERCENT\nUNOCCUPIED', style: TextStyle(color: Colors.brown[900], fontWeight: FontWeight.bold,), textAlign: TextAlign.center,)
+                ],
+              ),
+              
               Padding(
                 padding: const EdgeInsets.all(30.0),
                 child: PieChart(
@@ -183,29 +199,18 @@ class _HomeState extends State<Home> {
                   PieChartData(
                     sections: [
                       PieChartSectionData(
-                        value: falseval,
-                        color: Colors.green,
+                        value: red,
+                        color: Colors.pink,
                       ),
                       PieChartSectionData(
-                        value: trueval,
-                        color: Colors.pink,
+                        value: green,
+                        color: Colors.green,
                       ),
                     ],
                   ),
                 ),
               ),
-              Positioned(
-                bottom: 25,
-                left: 25,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    legend('Occupied', Colors.pink),
-                    const SizedBox(height: 5),
-                    legend('Unoccupied', Colors.green),
-                  ],
-                ),
-              ),
+              legend(),
             ],
           ),
         ),
@@ -213,7 +218,21 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget legend(String title, Color color) {
+  Widget legend() {
+    return Positioned(
+      bottom: 25,
+      left: 25,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          legendData('Occupied', Colors.pink),
+          const SizedBox(height: 5),
+          legendData('Unoccupied', Colors.green),],
+      ),
+    );
+  }
+
+  Widget legendData(String title, Color color) {
     return Row(
       children: [
         Container(
@@ -229,11 +248,11 @@ class _HomeState extends State<Home> {
 
   Widget data() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+      padding: const EdgeInsets.all(15),
       child: Container(
         height: 70,
         decoration: BoxDecoration(
-            color: Colors.brown[100], borderRadius: BorderRadius.circular(10)),
+            color: Colors.grey[200], borderRadius: BorderRadius.circular(10)),
         child: Center(
           child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -242,17 +261,22 @@ class _HomeState extends State<Home> {
                 children: [
                   Column(
                     children: [
-                      const Text('Occupied',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text('Occupied',
+                          style: TextStyle(
+                              color: Colors.brown[900],
+                              fontWeight: FontWeight.bold)),
                       const SizedBox(
                         height: 3,
                       ),
                       Text(
-                        occupied.toString(),
-                        style: const TextStyle(fontSize: 20, color: Colors.red),
+                        occ.toString(),
+                        style: const TextStyle(fontSize: 20, color: Colors.pink),
                       ),
                     ],
                   ),
+                  
+                  VerticalDivider(color: Colors.brown[200],),
+
                   Column(
                     children: [
                       const Text('Unoccupied',
@@ -261,7 +285,7 @@ class _HomeState extends State<Home> {
                         height: 3,
                       ),
                       Text(
-                        unOccupied.toString(),
+                        unocc.toString(),
                         style:
                             const TextStyle(fontSize: 20, color: Colors.green),
                       ),
@@ -280,7 +304,7 @@ class _HomeState extends State<Home> {
         crossAxisCount: 14,
         mainAxisSpacing: 5.0,
         crossAxisSpacing: 5.0,
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(15.0),
         children: [
           for (int i = 0; i < sub.length; i++)
             GestureDetector(
@@ -304,11 +328,13 @@ class _HomeState extends State<Home> {
                                                 fontSize: 28.0,
                                                 fontWeight: FontWeight.bold)),
                                         const SizedBox(height: 20),
-                                         Text('Number: ${sub[i]}',
-                                            style: const TextStyle(fontSize: 20.0)),
+                                        Text('Number: ${sub[i]}',
+                                            style: const TextStyle(
+                                                fontSize: 20.0)),
                                         const SizedBox(height: 10),
-                                         Text('Value: ${cell[1]}',
-                                            style: const TextStyle(fontSize: 20.0)),
+                                        Text('Value: ${cell[1]}',
+                                            style: const TextStyle(
+                                                fontSize: 20.0)),
                                         Align(
                                             alignment: Alignment.centerRight,
                                             child: TextButton(
@@ -320,16 +346,17 @@ class _HomeState extends State<Home> {
                                       ])));
                         });
               },
-              child: Container(
+              child: 
+            Container(
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.all(Radius.circular(5)),
                   color:
-                      sub[i] == 0 || sub[i] == '0' ? Colors.green : Colors.pink,
+                      sub[i][1] == '0' ? Colors.green : Colors.pink,
                 ),
                 child: Center(
                   child: Text('${i + 1}', textAlign: TextAlign.center),
                 ),
-              ),
+                ),
             ),
         ],
       ),

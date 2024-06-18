@@ -18,18 +18,14 @@ class MQTT {
 
   MQTT(
       {
-      required String host,
-      required String pubTopic,
-      required String subTopic,
-      required String identifier,
+      required this.host,
+      required this.pubTopic,
+      required this.subTopic,
+      required this.identifier,
       required MQTTState state
       })
 
       : 
-        host = host,
-        pubTopic = pubTopic,
-        subTopic = subTopic,
-        identifier = identifier,
         currentState = state;
 
   void mqttInit() {

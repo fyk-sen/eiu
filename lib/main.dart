@@ -18,10 +18,9 @@ class Main extends StatelessWidget {
     return MaterialApp(
       home: ChangeNotifierProvider<MQTTState>(
           create: (_) => MQTTState(),
-          child: const Home(),
-       ),
-       theme: ThemeData(scaffoldBackgroundColor: Colors.grey[200]),
-       );
+          child: const Home(),),
+        theme: ThemeData(scaffoldBackgroundColor: Colors.brown[100]),
+        );
   } 
 }
 
