@@ -40,7 +40,7 @@ Widget chart(String data, cell, id, value, sub, unocc, occ, percentage, round) {
 
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.all(10.0),
         child: Container(
           decoration: BoxDecoration(
               borderRadius: const BorderRadius.all(Radius.circular(20)),
@@ -56,16 +56,16 @@ Widget chart(String data, cell, id, value, sub, unocc, occ, percentage, round) {
                 "$round",
                 style: TextStyle(
                     color: Colors.brown[900],
-                    fontSize: 40,
+                    fontSize: 30,
                     fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center,
               ),
-              Text('PERCENT\nUNOCCUPIED', style: TextStyle(color: Colors.brown[900], fontWeight: FontWeight.bold,), textAlign: TextAlign.center,)
+              Text('PERCENT\nUNOCCUPIED', style: TextStyle(color: Colors.brown[900], fontWeight: FontWeight.bold, fontSize: 10), textAlign: TextAlign.center,)
                 ],
               ),
               
               Padding(
-                padding: const EdgeInsets.all(30.0),
+                padding: const EdgeInsets.all(15.0),
                 child: PieChart(
                   swapAnimationCurve: Curves.easeInOut,
                   swapAnimationDuration: const Duration(milliseconds: 750),

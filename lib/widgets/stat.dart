@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 Widget stat(occ, unocc) {
     return Padding(
-      padding: const EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(10.0),
       child: Expanded(
         child: Container(
           decoration: BoxDecoration(

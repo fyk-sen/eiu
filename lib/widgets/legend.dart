@@ -20,5 +20,5 @@ Widget legendData(String title, Color color) {
         height: 10,
         color: color,),
       const SizedBox(width: 5),
-      Text(title),
+      Text(title, style: const TextStyle(fontSize: 10),),
 ],);}
