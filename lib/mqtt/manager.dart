@@ -9,8 +9,7 @@ import 'state.dart';
 
 class MQTT {
   final String host;
-  final String pubTopic;
-  final String subTopic;
+  final String topic;
   final String identifier;
   final MQTTState currentState;
 
@@ -19,8 +18,7 @@ class MQTT {
   MQTT(
       {
       required this.host,
-      required this.pubTopic,
-      required this.subTopic,
+      required this.topic,
       required this.identifier,
       required MQTTState state
       })
@@ -92,7 +90,7 @@ class MQTT {
     final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
     builder.clear();
     builder.addString(message);
-    client!.publishMessage(pubTopic, MqttQos.exactlyOnce, builder.payload!);
+    client!.publishMessage(topic, MqttQos.exactlyOnce, builder.payload!);
   }
 
 // ------------------------------
@@ -129,14 +127,14 @@ class MQTT {
   void onConnected() {
     currentState.setAppConnectionState(MQTTAppConnectionState.connected);
     print('\nCONNECTED!');
-    client!.subscribe(subTopic, MqttQos.atLeastOnce);
+    client!.subscribe(topic, MqttQos.atLeastOnce);
 
     client!.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) 
     {
       final MqttPublishMessage recMsg = c![0].payload as MqttPublishMessage;
       final String subTxt = MqttPublishPayload.bytesToStringAsString(recMsg.payload.message);
-     
-     currentState.setSubText(subTxt);
+    
+    currentState.setSubText(subTxt);
     
     });
 
