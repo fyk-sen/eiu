@@ -1,4 +1,5 @@
 import 'popup.dart';
+import 'storage.dart';
 
 import 'package:flutter/material.dart';
 
@@ -23,7 +24,7 @@ Widget grid(sub, context, space) {
                       color: sub[i][1] == '0' ? Colors.green : Colors.pink,
                     ),
                     child: Center(
-                      child: Text('${i + 1}', textAlign: TextAlign.center),
+                      child: Text('${Storage.no[i]}', textAlign: TextAlign.center),
                     ),
                     ),
                 ),

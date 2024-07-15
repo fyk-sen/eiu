@@ -13,13 +13,13 @@ Widget chart(String data, cell, id, value, sub, unocc, occ, percentage, round) {
       if (cell[1] != '0'){value.add(cell[1])},
       
       for (int i = 0; i < sub.length; i++) {
-        if (i==id) {sub[i-1] = cell}, 
+        if (i==id) {sub[Storage.no.indexOf(id)] = cell}, 
         if (cell[1] == '') {cell[1] = '0'},},
       
       for(int i = 0 ; i < sub.length; i++){
-        if(sub[i][1] != '0'){c++}},
+        if(sub[i][1] != '0'){c++, c}},
 
-      print(c),
+      print('count:$c'),
         
         };
 
@@ -28,7 +28,7 @@ Widget chart(String data, cell, id, value, sub, unocc, occ, percentage, round) {
     print('sub $sub');
 
     double red = c.toDouble();
-    double green = sub.length - red;
+    double green = sub.length-1 - red;
 
     Storage.unocc = green.toInt();
     Storage.occ = red.toInt();
