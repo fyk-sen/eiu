@@ -13,7 +13,7 @@ Widget grid(sub, context, space) {
             crossAxisSpacing: 5.0,
             padding: const EdgeInsets.all(15.0),
             children: [
-              for (int i = 0; i < sub.length; i++)
+              for (int i = 0; i < sub.length-1; i++)
                 GestureDetector(
                   onTap: () {if(sub[i][1] != '0') {popup(context, space, sub[i][0], sub[i][1]);}},
                   child: 

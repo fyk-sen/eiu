@@ -24,7 +24,7 @@ class _HomeState extends State<Home> {
 
   List<String> cell = [];
   List<String> value = [];
-  List sub = List.generate(98, (index) => [0,'0']);
+  List sub = List.generate(99, (index) => [0,'0']);
   final space = const SizedBox(height: 10.0);
 
   @override
@@ -62,7 +62,6 @@ class _HomeState extends State<Home> {
 
   void conn() {
     manager = MQTT(
-      // host: '192.168.0.101',
       host: 'broker.emqx.io',
       topic: 'PLC',
       identifier: 'cbd',
