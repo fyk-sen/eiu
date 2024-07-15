@@ -11,11 +11,6 @@ Widget connState(String status, connColor) {
           child: Text(status, textAlign: TextAlign.center)),
 ),],));}
 
-Widget connBtn(MQTTAppConnectionState state, conn, disconn) {
-  return ElevatedButton(
-    onPressed: state == MQTTAppConnectionState.disconnected ? conn : disconn,
-    child: state == MQTTAppConnectionState.disconnected ? const Text('Connect') : const Text('Disconnect'),
-);}
 
 //There's probably a way to combine connText and connColor.
 

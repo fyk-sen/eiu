@@ -27,6 +27,8 @@ class _HomeState extends State<Home> {
   List sub = List.generate(99, (index) => [0,'0']);
   final space = const SizedBox(height: 10.0);
 
+  String? _value ='one';
+
   @override
   void initState() {super.initState();}
 
@@ -36,23 +38,29 @@ class _HomeState extends State<Home> {
 
     currentAppState = appState;
 
+    Future(() async {if (currentAppState.getAppConnectionState == MQTTAppConnectionState.disconnected) {conn();}});
+  
   return Scaffold(
+    appBar: AppBar(backgroundColor: connColor(currentAppState.getAppConnectionState),
+          title: DropdownButton<String>(
+          value: _value,
+          items: const <DropdownMenuItem<String>>[
+            DropdownMenuItem(
+              value: 'one',
+              child: Text('one'),
+            
+            ),
+            DropdownMenuItem(
+              value: 'two',
+              child: Text('two'),
+
+            ),
+          ], 
+          onChanged: (String? value) {setState(() => _value = value);},),),
       body: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        connState(connText(currentAppState.getAppConnectionState),
-            connColor(currentAppState.getAppConnectionState)),
-            space,
-        connBtn(currentAppState.getAppConnectionState, conn, disconn),
-        space,
-        Text(
-          'STALL DATA',
-          style: TextStyle(
-              color: Colors.brown[900],
-              fontSize: 21,
-              fontWeight: FontWeight.bold),
-        ),
         chart(currentAppState.getSubText, cell, id, value, sub, Storage.unocc, Storage.occ, percentage, round),
         stat(Storage.occ, Storage.unocc),
         grid(sub, context, space),
@@ -60,7 +68,7 @@ class _HomeState extends State<Home> {
     ));
   }
 
-  void conn() {
+  void conn(){
     manager = MQTT(
       // host: '192.168.0.101',
       host: 'broker.emqx.io',
@@ -69,6 +77,7 @@ class _HomeState extends State<Home> {
       state: currentAppState);
     manager.mqttInit();
     manager.connect();
+    return;
   }
 
   void disconn() {manager.disconnect();}
